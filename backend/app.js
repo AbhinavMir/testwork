@@ -258,6 +258,13 @@ app.get('/', (req, res) => {
             { method: "GET", path: "/providers", description: "Get all providers from the providers table." },
             { method: "GET", path: "/cpt-codes", description: "Get all CPT codes from the cpt_codes table." },
             { method: "GET", path: "/provider-cpt-approval", description: "Get all provider CPT approval statuses from the provider_cpt_approval table." },
+            { method: "GET", path: "/goldcarding-eligibility", description: "Get gold carding eligibility for all providers based on gold carding rules." },
+            { method: "POST", path: "/providers", description: "Create a new provider in the providers table." },
+            { method: "POST", path: "/payers", description: "Create a new payer in the payers table." },
+            { method: "POST", path: "/gold-carding-rules", description: "Create a new gold carding rule in the gold_carding_rules table." },
+            { method: "POST", path: "/cpt-codes", description: "Create a new CPT code in the cpt_codes table." },
+            { method: "POST", path: "/provider-cpt-approval", description: "Create a new provider CPT approval status in the provider_cpt_approval table." },
+            { method: "GET", path: "/trigger-cron-job
         ]
     });
 });
