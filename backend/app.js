@@ -4,6 +4,10 @@ const { Pool } = require('pg');
 const app = express();
 const port = 3000;
 
+let cronSchedule = '0 0 1 * *'; // Default schedule: At 00:00 on day-of-month 1.
+let cronJob = null;
+
+
 const pool = new Pool({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
@@ -137,7 +141,112 @@ app.get('/goldcarding-eligibility', async (req, res) => {
 });
 
 
+app.post('/providers', async (req, res) => {
+    const { name, specialty, NPI_number, email, phone_number } = req.body;
+    try {
+        const result = await pool.query(
+            'INSERT INTO providers (name, specialty, NPI_number, email, phone_number) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [name, specialty, NPI_number, email, phone_number]
+        );
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
 
+app.post('/payers', async (req, res) => {
+    const { name, description } = req.body;
+    try {
+        const result = await pool.query(
+            'INSERT INTO payers (name, description) VALUES ($1, $2) RETURNING *',
+            [name, description]
+        );
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+app.post('/gold-carding-rules', async (req, res) => {
+    const { payer_id, description, metric, threshold, measurement_period_months } = req.body;
+    try {
+        const result = await pool.query(
+            'INSERT INTO gold_carding_rules (payer_id, description, metric, threshold, measurement_period_months) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [payer_id, description, metric, threshold, measurement_period_months]
+        );
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+app.post('/cpt-codes', async (req, res) => {
+    const { code, description } = req.body;
+    try {
+        const result = await pool.query(
+            'INSERT INTO cpt_codes (code, description) VALUES ($1, $2) RETURNING *',
+            [code, description]
+        );
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+app.post('/provider-cpt-approval', async (req, res) => {
+    const { provider_id, cpt_code, approval_status, denial_reason } = req.body;
+    try {
+        const result = await pool.query(
+            'INSERT INTO provider_cpt_approval (provider_id, cpt_code, approval_status, denial_reason) VALUES ($1, $2, $3, $4) RETURNING *',
+            [provider_id, cpt_code, approval_status, denial_reason]
+        );
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+const startCronJob = () => {
+    if (cronJob) {
+        cronJob.stop(); // Stop the current job if it's running.
+    }
+    cronJob = cron.schedule(cronSchedule, async () => {
+        console.log(`Running scheduled task: ${new Date().toString()}`);
+        // Place your cron job logic here.
+    });
+    console.log(`Cron job scheduled with: "${cronSchedule}"`);
+};
+
+app.get('/trigger-cron-job', (req, res) => {
+    // Assuming the cron job's task is abstracted in a function:
+    async function cronTask() {
+        console.log(`Manually triggered task at ${new Date().toString()}`);
+        // Your task logic here.
+    }
+    cronTask()
+        .then(() => res.send('Cron job task manually triggered.'))
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error triggering cron job task.');
+        });
+});
+
+app.post('/update-cron-frequency', (req, res) => {
+    const { frequency } = req.body; // Expecting frequency in cron format.
+    if (!frequency) {
+        return res.status(400).send('Frequency is required and must be in cron format.');
+    }
+    cronSchedule = frequency;
+    startCronJob(); // Restart the cron job with the new frequency.
+    res.send(`Cron job frequency updated to: "${frequency}"`);
+});
+
+startCronJob();
 app.get('/', (req, res) => {
     res.json({
         endpoints: [
