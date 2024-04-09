@@ -3,6 +3,7 @@ const express = require('express');
 const { Pool } = require('pg');
 const app = express();
 const port = 3000;
+const cron = require('node-cron'); // Import node-cron
 
 let cronSchedule = '0 0 1 * *'; // Default schedule: At 00:00 on day-of-month 1.
 let cronJob = null;
