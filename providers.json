@@ -1,0 +1,33 @@
+{
+"providers": [
+{"provider_id": 1, "name": "Dr. A", "specialty": "Cardiology"},
+{"provider_id": 2, "name": "Dr. B", "specialty": "Endocrinology"},
+{"provider_id": 3, "name": "Dr. C", "specialty": "General Surgery"},
+{"provider_id": 4, "name": "Dr. D", "specialty": "Orthopedics"},
+{"provider_id": 5, "name": "Dr. E", "specialty": "Pediatrics"},
+{"provider_id": 6, "name": "Dr. F", "specialty": "Neurology"},
+{"provider_id": 7, "name": "Dr. G", "specialty": "Dermatology"},
+{"provider_id": 8, "name": "Dr. H", "specialty": "Ophthalmology"},
+{"provider_id": 9, "name": "Dr. I", "specialty": "Psychiatry"},
+{"provider_id": 10, "name": "Dr. J", "specialty": "Rheumatology"}
+],
+"cpt_codes": [
+{"cpt_code": "99213", "description": "Office or other outpatient visit"},
+{"cpt_code": "99214", "description": "Detailed office or other outpatient visit"},
+{"cpt_code": "93306", "description": "Echocardiography"},
+{"cpt_code": "83036", "description": "Hemoglobin A1C level"},
+{"cpt_code": "12002", "description": "Simple wound repair"}
+],
+"provider_cpt_approval": [
+{"provider_id": 1, "cpt_code": "93306", "approval_status": true},
+{"provider_id": 2, "cpt_code": "83036", "approval_status": true},
+{"provider_id": 3, "cpt_code": "12002", "approval_status": false, "denial_reason": "Incomplete documentation"},
+{"provider_id": 4, "cpt_code": "99214", "approval_status": false, "denial_reason": "Lack of prior necessary diagnosis"},
+{"provider_id": 5, "cpt_code": "99213", "approval_status": true},
+{"provider_id": 6, "cpt_code": "83036", "approval_status": true},
+{"provider_id": 7, "cpt_code": "93306", "approval_status": false, "denial_reason": "Out of policy coverage"},
+{"provider_id": 8, "cpt_code": "12002", "approval_status": true},
+{"provider_id": 9, "cpt_code": "99214", "approval_status": true},
+{"provider_id": 10, "cpt_code": "99213", "approval_status": false, "denial_reason": "Lack of medical necessity"}
+]
+}

@@ -1,0 +1,64 @@
+{
+"payers": [
+{
+"payer_id": "1",
+"name": "HealthyLife Insurance",
+"description": "Nationwide health insurance provider offering a range of healthcare plans."
+},
+{
+"payer_id": "2",
+"name": "WellCare Insurance",
+"description": "A leading health insurance company focused on preventive care and wellness."
+}
+],
+"gold_carding_rules": [
+{
+"rule_id": "1",
+"payer_id": "1",
+"description": "Providers must have an approval rate of 95% or higher for all PA requests over the past 12 months.",
+"metric": "approval_rate",
+"threshold": "95",
+"measurement_period_months": "12"
+},
+{
+"rule_id": "2",
+"payer_id": "1",
+"description": "Providers must have submitted at least 100 PA requests in the past 12 months.",
+"metric": "submission_volume",
+"threshold": "100",
+"measurement_period_months": "12"
+},
+{
+"rule_id": "3",
+"payer_id": "2",
+"description": "Providers must demonstrate 90% adherence to treatment guidelines for chronic conditions.",
+"metric": "guideline_adherence",
+"threshold": "90",
+"measurement_period_months": "12"
+}
+],
+"payer_gold_carding_eligibility": [
+{
+"eligibility_id": "1",
+"payer_id": "1",
+"provider_id": "1",
+"cpt_code": "99213",
+"is_eligible": true
+},
+{
+"eligibility_id": "2",
+"payer_id": "1",
+"provider_id": "2",
+"cpt_code": "93306",
+"is_eligible": false,
+"reason": "Below minimum submission volume"
+},
+{
+"eligibility_id": "3",
+"payer_id": "2",
+"provider_id": "3",
+"cpt_code": "83036",
+"is_eligible": true
+}
+]
+}
