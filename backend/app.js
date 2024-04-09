@@ -264,7 +264,8 @@ app.get('/', (req, res) => {
             { method: "POST", path: "/gold-carding-rules", description: "Create a new gold carding rule in the gold_carding_rules table." },
             { method: "POST", path: "/cpt-codes", description: "Create a new CPT code in the cpt_codes table." },
             { method: "POST", path: "/provider-cpt-approval", description: "Create a new provider CPT approval status in the provider_cpt_approval table." },
-            { method: "GET", path: "/trigger-cron-job
+            { method: "GET", path: "/trigger-cron-job", description: "Manually trigger the cron job task." },
+            { method: "POST", path: "/update-cron-frequency", description: "Update the frequency of the cron job." }
         ]
     });
 });
