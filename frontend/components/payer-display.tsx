@@ -1,6 +1,28 @@
-import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
+"use client";
 
-export function payerDisplay() {
+import { useEffect, useState } from 'react';
+import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table";
+
+export default function PayerDisplay() {
+  const [payers, setPayers] = useState([]);
+
+  useEffect(() => {
+    const fetchPayers = async () => {
+      const apiUrl = "https://testwork-g1it.onrender.com";
+      try {
+        console.log(apiUrl)
+        const response = await fetch(`${apiUrl}/payers`);
+        console.log(response)
+        const data = await response.json();
+        setPayers(data);
+      } catch (error) {
+        console.error('Error fetching payers:', error);
+      }
+    };
+
+    fetchPayers();
+  }, []);
+
   return (
     <Table>
       <TableHeader>
@@ -11,32 +33,14 @@ export function payerDisplay() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow>
-          <TableCell className="font-medium">P001</TableCell>
-          <TableCell>HealthFirst Insurance</TableCell>
-          <TableCell>Providing comprehensive healthcare coverage for families and individuals.</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell className="font-medium">P002</TableCell>
-          <TableCell>MediCare Plus</TableCell>
-          <TableCell>Specializing in senior care and offering additional benefits for Medicare recipients.</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell className="font-medium">P003</TableCell>
-          <TableCell>WellCare Network</TableCell>
-          <TableCell>Focused on wellness programs and preventive care services for members.</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell className="font-medium">P004</TableCell>
-          <TableCell>LifeGuard Health</TableCell>
-          <TableCell>Emphasizing emergency care and life-saving treatments in their network of hospitals.</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell className="font-medium">P005</TableCell>
-          <TableCell>SecureCare Solutions</TableCell>
-          <TableCell>Offering secure and reliable healthcare management services for providers and patients.</TableCell>
-        </TableRow>
+        {payers.map((payer: { payer_id: number, name: string, description: string }) => (
+          <TableRow key={payer.payer_id}>
+            <TableCell className="font-medium">P{payer.payer_id.toString().padStart(3, '0')}</TableCell>
+            <TableCell>{payer.name}</TableCell>
+            <TableCell>{payer.description}</TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
-  )
+  );
 }
