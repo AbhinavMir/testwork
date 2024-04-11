@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
 const app = express();
 const cron = require('node-cron');
-const port = 3000;
+const port = 3004;
 let cronJob = null;
 let cronSchedule = '0 * * * *';
 require('dotenv').config();
