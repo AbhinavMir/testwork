@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table";
+import {Spinner} from "@nextui-org/spinner";
 
 export default function PayerDisplay() {
   const [payers, setPayers] = useState([]);
+  const [isLoading, setIsLoading] = useState(false); // New state for loading status
 
   useEffect(() => {
     const fetchPayers = async () => {
+      setIsLoading(true); // Set loading to true before fetching data
       const apiUrl = "https://testwork-g1it.onrender.com";
       try {
         console.log(apiUrl)
@@ -17,13 +20,17 @@ export default function PayerDisplay() {
         setPayers(data);
       } catch (error) {
         console.error('Error fetching payers:', error);
+      } finally {
+        setIsLoading(false); // Set loading to false after fetching data
       }
     };
 
     fetchPayers();
   }, []);
 
-  return (
+  return isLoading ? (
+    <Spinner />
+  ) : (
     <Table>
       <TableHeader>
         <TableRow>
