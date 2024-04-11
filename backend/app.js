@@ -1,19 +1,15 @@
-require('dotenv').config();
 const express = require('express');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
 const app = express();
 const port = 3000;
-const cron = require('node-cron'); // Import node-cron
-const cors = require('cors');
-const bcrypt = require('bcryptjs'); // Import bcryptjs for password hashing
-const jwt = require('jsonwebtoken'); // Import jwt for token management
+
+require('dotenv').config();
+
+app.use(express.json()); // for parsing application/json
 
 const jwtSecretKey = process.env.JWT_SECRET_KEY;
-
-app.use(cors());
-let cronSchedule = '0 0 1 * *'; // Default schedule: At 00:00 on day-of-month 1.
-let cronJob = null;
-
 
 const pool = new Pool({
     user: process.env.DB_USER,
@@ -22,6 +18,58 @@ const pool = new Pool({
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
 });
+
+app.post('/signup', async (req, res) => {
+    const { username, email, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    try {
+        const newUser = await pool.query(
+            'INSERT INTO "user" (username, email, password) VALUES ($1, $2, $3) RETURNING id, username, email',
+            [username, email, hashedPassword]
+        );
+        res.json(newUser.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        const user = await pool.query(
+            'SELECT * FROM "user" WHERE username = $1',
+            [username]
+        );
+
+        if (user.rows.length > 0) {
+            const validPassword = await bcrypt.compare(password, user.rows[0].password);
+            if (validPassword) {
+                const token = jwt.sign({ id: user.rows[0].id }, jwtSecretKey, { expiresIn: '1h' });
+                res.json({ token });
+            } else {
+                res.status(400).send('Invalid Credentials');
+            }
+        } else {
+            res.status(400).send('User does not exist');
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (token == null) return res.sendStatus(401);
+
+    jwt.verify(token, jwtSecretKey, (err, user) => {
+        if (err) return res.sendStatus(403);
+        req.user = user;
+        next();
+    });
+};
 
 app.get('/payers', async (req, res) => {
     try {
@@ -148,7 +196,7 @@ app.get('/goldcarding-eligibility', async (req, res) => {
 });
 
 
-app.post('/providers', async (req, res) => {
+app.post('/providers', authenticateToken, async (req, res) => {
     const { name, specialty, NPI_number, email, phone_number } = req.body;
     try {
         const result = await pool.query(
@@ -162,7 +210,7 @@ app.post('/providers', async (req, res) => {
     }
 });
 
-app.post('/payers', async (req, res) => {
+app.post('/payers', authenticateToken, async (req, res) => {
     const { name, description } = req.body;
     try {
         const result = await pool.query(
@@ -176,7 +224,7 @@ app.post('/payers', async (req, res) => {
     }
 });
 
-app.post('/gold-carding-rules', async (req, res) => {
+app.post('/gold-carding-rules', authenticateToken, async (req, res) => {
     const { payer_id, description, metric, threshold, measurement_period_months } = req.body;
     try {
         const result = await pool.query(
@@ -190,7 +238,7 @@ app.post('/gold-carding-rules', async (req, res) => {
     }
 });
 
-app.post('/cpt-codes', async (req, res) => {
+app.post('/cpt-codes', authenticateToken, async (req, res) => {
     const { code, description } = req.body;
     try {
         const result = await pool.query(
@@ -204,7 +252,7 @@ app.post('/cpt-codes', async (req, res) => {
     }
 });
 
-app.post('/provider-cpt-approval', async (req, res) => {
+app.post('/provider-cpt-approval', authenticateToken, async (req, res) => {
     const { provider_id, cpt_code, approval_status, denial_reason } = req.body;
     try {
         const result = await pool.query(
@@ -229,7 +277,7 @@ const startCronJob = () => {
     console.log(`Cron job scheduled with: "${cronSchedule}"`);
 };
 
-app.get('/trigger-cron-job', (req, res) => {
+app.get('/trigger-cron-job', authenticateToken, (req, res) => {
     // Assuming the cron job's task is abstracted in a function:
     async function cronTask() {
         console.log(`Manually triggered task at ${new Date().toString()}`);
@@ -243,7 +291,7 @@ app.get('/trigger-cron-job', (req, res) => {
         });
 });
 
-app.post('/update-cron-frequency', (req, res) => {
+app.post('/update-cron-frequency', authenticateToken, (req, res) => {
     const { frequency } = req.body; // Expecting frequency in cron format.
     if (!frequency) {
         return res.status(400).send('Frequency is required and must be in cron format.');
