@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table";
-import {Spinner} from "@nextui-org/spinner";
+import Spinner from "@/components/ui/spinner"
 
 export default function PayerDisplay() {
   const [payers, setPayers] = useState([]);
