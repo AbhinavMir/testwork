@@ -4,11 +4,11 @@ const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
 const app = express();
 const cron = require('node-cron');
-const port = 3000;
+
 let cronJob = null;
 let cronSchedule = '0 * * * *';
 require('dotenv').config();
-
+const port = process.env.PORT || 3000;
 app.use(express.json()); // for parsing application/json
 const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
