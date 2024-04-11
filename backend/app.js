@@ -3,12 +3,12 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
 const app = express();
+const cron = require('node-cron');
 const port = 3000;
 
 require('dotenv').config();
 
 app.use(express.json()); // for parsing application/json
-
 const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
 const pool = new Pool({
