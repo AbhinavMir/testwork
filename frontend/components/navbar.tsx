@@ -1,14 +1,19 @@
-// components/Navbar.tsx
-import Link from 'next/link'
+import Link from "next/link"
 
-const Navbar: React.FC = () => {
+export function Navbar() {
   return (
-    <nav>
-      <Link href="/"><a>Home</a></Link>
-      <Link href="/about"><a>About</a></Link>
-      {/* Add more links as needed */}
+    <nav className="flex items-center h-14 px-4 border-b gap-2 md:gap-4 text-sm font-medium dark:text-gray-400">
+      <Link className="flex items-center gap-2" href="#">
+        GoldCarder Inc.
+      </Link>
+      <div className="ml-auto flex items-center space-x-4">
+        <Link className="font-semibold" href="/login">
+          Login
+        </Link>
+        <Link className="font-semibold" href="/signup">
+          Signup
+        </Link>
+      </div>
     </nav>
   )
 }
-
-export default Navbar
