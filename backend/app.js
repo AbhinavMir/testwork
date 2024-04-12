@@ -35,6 +35,16 @@ app.post('/signup', async (req, res) => {
     }
 });
 
+app.post('/get-all-users', async (req, res) => {
+    try {
+        const users = await pool.query('SELECT * FROM "users"');
+        res.json(users.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+}
+
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
     try {
