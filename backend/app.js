@@ -23,6 +23,7 @@ const pool = new Pool({
 const jwtSecretKey = process.env.JWT_SECRET_KEY;
 const jwtRefreshSecretKey = process.env.JWT_REFRESH_SECRET_KEY;
 console.log(process.env.JWT_SECRET_KEY); 
+console.log(process.env.JWT_REFRESH_SECRET_KEY);
 app.post("/signup", async (req, res) => {
   const { username, email, hashed_password } = req.body;
   if (!hashed_password) {
