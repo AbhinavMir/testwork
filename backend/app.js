@@ -265,8 +265,8 @@ app.post("/payers", authenticateToken, async (req, res) => {
   const { payer_id, name, description } = req.body;
   try {
     const result = await pool.query(
-      "INSERT INTO payers (payer_id ,name, description) VALUES ($1, $2, $3) RETURNING *",
-      [payer_id, name, description]
+      "INSERT INTO payers (name, description) VALUES ($1, $2) RETURNING *",
+      [name, description]
     );
     res.json(result.rows[0]);
   } catch (err) {
