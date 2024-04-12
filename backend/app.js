@@ -210,20 +210,33 @@ app.delete("/providers/:id", authenticateToken, async (req, res) => {
 );
 
 // Endpoint to get all providers
-app.get("/providers",  async (req, res) => {
+// Endpoint to get all providers with gold carding details
+app.get("/providers", async (req, res) => {
   try {
     const query = `
       SELECT 
         p.provider_id,
         p.name,
         p.specialty,
-        COALESCE(py.name, 'NA') AS gold_carded_by
+        COALESCE(py.name, 'NA') AS gold_carded_by,
+        COALESCE(py.description, 'NA') AS payer_description,
+        pge.is_eligible,
+        pge.reason,
+        gr.rule_id,
+        gr.description AS rule_description,
+        gr.metric,
+        gr.threshold,
+        gr.measurement_period_months
       FROM 
         providers p
       LEFT JOIN 
         payer_gold_carding_eligibility pge ON p.provider_id = pge.provider_id
       LEFT JOIN 
-        payers py ON pge.payer_id = py.payer_id AND pge.is_eligible = true
+        payers py ON pge.payer_id = py.payer_id
+      LEFT JOIN 
+        gold_carding_rules gr ON py.payer_id = gr.payer_id
+      WHERE 
+        pge.is_eligible = true
     `;
     const result = await pool.query(query);
     res.json(result.rows);
@@ -232,6 +245,7 @@ app.get("/providers",  async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+
 
 // Endpoint to get all CPT codes
 app.get("/cpt-codes", async (req, res) => {
