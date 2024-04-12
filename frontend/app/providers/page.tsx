@@ -29,11 +29,12 @@ export default function ProviderDisplay() {
 
   useEffect(() => {
     async function fetchProviders() {
-      const apiUrl = "http://testwork-g1it.onrender.com";
+      const apiUrl = "https://testwork-g1it.onrender.com";
       try {
         const response = await fetch(`${apiUrl}/providers`);
         const data: Provider[] = await response.json();
         setProviders(data);
+        console.log(data);
       } catch (error) {
         console.error("Error fetching providers:", error);
       }
