@@ -9,8 +9,6 @@ let cronJob = null;
 let cronSchedule = "0 * * * *";
 require("dotenv").config();
 
-
-
 const port = process.env.PORT || 3000;
 app.use(express.json()); // for parsing application/json
 // add cors
@@ -25,7 +23,7 @@ const pool = new Pool({
 
 const jwtSecretKey = process.env.JWT_SECRET_KEY;
 const jwtRefreshSecretKey = process.env.JWT_REFRESH_SECRET_KEY;
-console.log(process.env.JWT_SECRET_KEY); 
+console.log(process.env.JWT_SECRET_KEY);
 console.log(process.env.JWT_REFRESH_SECRET_KEY);
 
 app.post("/signup", async (req, res) => {
@@ -56,53 +54,56 @@ app.get("/get-all-users", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-    const { username, hashed_password } = req.body;
-    try {
-      const user = await pool.query('SELECT * FROM "users" WHERE username = $1', [
-        username,
-      ]);
-  
-      if (user.rows.length > 0) {
-        const validPassword = await bcrypt.compare(
-          hashed_password,
-          user.rows[0].hashed_password
-        );
-        if (validPassword) {
-          const accessToken = jwt.sign({ id: user.rows[0].id }, jwtSecretKey, {
-            expiresIn: "1h",
-          });
-          const refreshToken = jwt.sign({ id: user.rows[0].id }, jwtRefreshSecretKey, {
+  const { username, hashed_password } = req.body;
+  try {
+    const user = await pool.query('SELECT * FROM "users" WHERE username = $1', [
+      username,
+    ]);
+
+    if (user.rows.length > 0) {
+      const validPassword = await bcrypt.compare(
+        hashed_password,
+        user.rows[0].hashed_password
+      );
+      if (validPassword) {
+        const accessToken = jwt.sign({ id: user.rows[0].id }, jwtSecretKey, {
+          expiresIn: "1h",
+        });
+        const refreshToken = jwt.sign(
+          { id: user.rows[0].id },
+          jwtRefreshSecretKey,
+          {
             expiresIn: "24h",
-          });
-          res.json({ accessToken, refreshToken });
-        } else {
-          res.status(400).send("Invalid Credentials");
-        }
+          }
+        );
+        res.json({ accessToken, refreshToken });
       } else {
-        res.status(400).send("User does not exist");
+        res.status(400).send("Invalid Credentials");
       }
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Server Error");
+    } else {
+      res.status(400).send("User does not exist");
     }
-  });
-  
-  app.post("/refresh", (req, res) => {
-    const { token } = req.body;
-    if (!token) {
-      return res.status(401).send("Refresh Token Required");
-    }
-    try {
-      const userData = jwt.verify(token, jwtRefreshSecretKey);
-      const accessToken = jwt.sign({ id: userData.id }, jwtSecretKey, {
-        expiresIn: "1h"
-      });
-      res.json({ accessToken });
-    } catch (err) {
-      res.status(403).send("Invalid Refresh Token");
-    }
-  });
-  
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+});
+
+app.post("/refresh", (req, res) => {
+  const { token } = req.body;
+  if (!token) {
+    return res.status(401).send("Refresh Token Required");
+  }
+  try {
+    const userData = jwt.verify(token, jwtRefreshSecretKey);
+    const accessToken = jwt.sign({ id: userData.id }, jwtSecretKey, {
+      expiresIn: "1h",
+    });
+    res.json({ accessToken });
+  } catch (err) {
+    res.status(403).send("Invalid Refresh Token");
+  }
+});
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
@@ -261,11 +262,11 @@ app.post("/providers", authenticateToken, async (req, res) => {
 });
 
 app.post("/payers", authenticateToken, async (req, res) => {
-  const { name, description } = req.body;
+  const { payer_id, name, description } = req.body;
   try {
     const result = await pool.query(
-      "INSERT INTO payers (name, description) VALUES ($1, $2) RETURNING *",
-      [name, description]
+      "INSERT INTO payers (payer_id ,name, description) VALUES ($1, $2, $3) RETURNING *",
+      [payer_id, name, description]
     );
     res.json(result.rows[0]);
   } catch (err) {

@@ -1,6 +1,6 @@
 import Navbar from "@/components/navbar";
 import { Login } from "@/components/login";
-function Payer() {
+function LoginPage() {
   return (
     <><Navbar />
     <Login></Login>
@@ -8,4 +8,4 @@ function Payer() {
   );
 }
 
-export default Payer;
+export default LoginPage;

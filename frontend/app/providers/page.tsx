@@ -9,7 +9,7 @@ import {
   TableBody,
   Table,
 } from "@/components/ui/table";
-
+import Navbar from "@/components/navbar";
 
 interface Provider {
   provider_id: number;
@@ -89,6 +89,7 @@ export default function ProviderDisplay() {
 
   return (
     <>
+    <Navbar />
       <Table>
         <TableHeader>
           <TableRow>
@@ -109,23 +110,7 @@ export default function ProviderDisplay() {
           ))}
         </TableBody>
       </Table>
-      <div>
-        <TextInput
-          placeholder="Name"
-          value={newProvider.name}
-          onChange={(e) =>
-            setNewProvider({ ...newProvider, name: e.target.value })
-          }
-        />
-        <TextInput
-          placeholder="Specialty"
-          value={newProvider.specialty}
-          onChange={(e) =>
-            setNewProvider({ ...newProvider, specialty: e.target.value })
-          }
-        />
-        <Button onClick={addProvider}>Add Provider</Button>
-      </div>
+      
     </>
   );
 }

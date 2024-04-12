@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { useState } from "react";
-import bcrypt from "bcryptjs";
+// import bcrypt from "bcryptjs";
 
 export function Login() {
   const [username, setUsername] = useState("");
@@ -26,7 +26,11 @@ export function Login() {
       if (response.ok) {
         const data = await response.json();
         // Handle successful login, e.g., store the token, redirect, etc.
-        console.log(data.token);
+        console.log(data.accessToken);
+        // store the token
+        localStorage.setItem("token", data.accessToken);
+        // redirect
+        window.location.href = "/dashboard";
       } else {
         // Handle login error
         console.error("Login failed");
