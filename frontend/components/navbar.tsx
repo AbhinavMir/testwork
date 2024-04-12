@@ -9,10 +9,10 @@ export default function Component() {
         Acme Inc
       </Link>
       <div className="ml-auto flex items-center space-x-4">
-        <Link className="font-semibold" href="#">
+        <Link className="font-semibold" href="/login">
           Login
         </Link>
-        <Link className="font-semibold" href="#">
+        <Link className="font-semibold" href="/signup">
           Signup
         </Link>
         <DropdownMenu>

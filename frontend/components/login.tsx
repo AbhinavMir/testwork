@@ -1,39 +1,40 @@
 "use client";
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import Link from "next/link"
-import { useState } from "react"
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
+import { useState } from "react";
+import bcrypt from "bcryptjs";
 
 export function Login() {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     try {
       const response = await fetch("https://testwork-g1it.onrender.com/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }),
-      })
+        body: JSON.stringify({ username, hashed_password: password }),
+      });
 
       if (response.ok) {
-        const data = await response.json()
+        const data = await response.json();
         // Handle successful login, e.g., store the token, redirect, etc.
-        console.log(data.token)
+        console.log(data.token);
       } else {
         // Handle login error
-        console.error("Login failed")
+        console.error("Login failed");
       }
     } catch (error) {
-      console.error("Error:", error)
+      console.error("Error:", error);
     }
-  }
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen">
@@ -80,5 +81,5 @@ export function Login() {
         </div>
       </div>
     </div>
-  )
+  );
 }
