@@ -15,6 +15,7 @@ interface Provider {
   provider_id: number;
   name: string;
   specialty: string;
+  goldcarded_by: string;
 }
 
 interface TextInputProps {
@@ -22,7 +23,16 @@ interface TextInputProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
+interface BadgeProps {
+  children: React.ReactNode;
+  className?: string;
+}
 
+const Badge: React.FC<BadgeProps> = ({ children, className = "" }) => (
+  <span className={`text-sm font-medium py-1 px-2 rounded-full ${className}`}>
+    {children}
+  </span>
+);
 const TextInput: React.FC<TextInputProps> = ({
   placeholder,
   value,
@@ -67,50 +77,33 @@ export default function ProviderDisplay() {
     fetchProviders();
   }, []);
 
-  async function addProvider() {
-    const apiUrl = "https://testwork-g1it.onrender.com/providers";
-    try {
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newProvider),
-      });
-      if (response.ok) {
-        const addedProvider: Provider = await response.json();  
-        setProviders((prevProviders) => [...prevProviders, addedProvider]);
-        setNewProvider({ name: "", specialty: "" }); // Reset form
-      }
-    } catch (error) {
-      console.error("Error adding provider:", error);
-    }
-  }
-
   return (
     <>
-    <Navbar />
+      <Navbar />
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead className="w-[100px]">Provider ID</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Specialty</TableHead>
+            <TableHead>Goldcarded by</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {providers.map(({ provider_id, name, specialty }) => (
+          {providers.map(({ provider_id, name, specialty, goldcarded_by }) => (
             <TableRow key={provider_id}>
               <TableCell className="font-medium">
                 P{provider_id.toString().padStart(3, "0")}
               </TableCell>
               <TableCell>{name}</TableCell>
               <TableCell>{specialty}</TableCell>
+              <TableCell>
+                <Badge className="bg-yellow-800">{goldcarded_by}</Badge>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      
     </>
   );
 }

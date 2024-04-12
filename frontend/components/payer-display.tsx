@@ -15,7 +15,7 @@ export default function PayerDisplay() {
       try {
         console.log(apiUrl)
         const response = await fetch(`${apiUrl}/payers`);
-        console.log(response)
+        // console.log(response)
         console.log(response)
         const data = await response.json();
         setPayers(data);

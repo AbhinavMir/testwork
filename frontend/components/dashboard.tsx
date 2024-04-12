@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { AddPayer } from "./add-payer"
 import { useState } from 'react'
+import { AddProvider } from './add-provider';
 
 export function Dashboard() {
   // const router = useRouter()
@@ -37,6 +38,7 @@ useEffect(() => {
         <p className="text-gray-500 dark:text-gray-400">Manage your list of payers and providers</p>
       </div>
     <AddPayer />
+    <AddProvider />
     </div>
   )
 }
