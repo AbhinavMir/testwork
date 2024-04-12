@@ -150,9 +150,22 @@ app.get("/payer-gold-carding-eligibility", async (req, res) => {
 });
 
 // Endpoint to get all providers
-app.get("/providers", async (req, res) => {
+app.get("/providers",  async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM providers");
+    const query = `
+      SELECT 
+        p.provider_id,
+        p.name,
+        p.specialty,
+        COALESCE(py.name, 'NA') AS gold_carded_by
+      FROM 
+        providers p
+      LEFT JOIN 
+        payer_gold_carding_eligibility pge ON p.provider_id = pge.provider_id
+      LEFT JOIN 
+        payers py ON pge.payer_id = py.payer_id AND pge.is_eligible = true
+    `;
+    const result = await pool.query(query);
     res.json(result.rows);
   } catch (err) {
     console.error(err);
