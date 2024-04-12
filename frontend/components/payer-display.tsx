@@ -82,7 +82,7 @@ const handleDelete = async (payerId: number) => {
               <TableCell>{payer.description}</TableCell>
               <TableCell>
                 <IconButton aria-label="delete" color="secondary">
-                  <Button onClick={() => handleDelete(payer.payer_id)}>
+                  <Button onClick={() => handleDelete(payer.payer_id)} className="bg-red-500 text-white p-2 rounded">
                     <DeleteIcon />
                   </Button>
                 </IconButton>
