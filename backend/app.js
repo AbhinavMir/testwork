@@ -4,14 +4,17 @@ const jwt = require("jsonwebtoken");
 const { Pool } = require("pg");
 const app = express();
 const cron = require("node-cron");
-
+const cors = require("cors");
 let cronJob = null;
 let cronSchedule = "0 * * * *";
 require("dotenv").config();
 
+
+
 const port = process.env.PORT || 3000;
 app.use(express.json()); // for parsing application/json
-
+// add cors
+app.use(cors());
 const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
@@ -24,16 +27,16 @@ const jwtSecretKey = process.env.JWT_SECRET_KEY;
 const jwtRefreshSecretKey = process.env.JWT_REFRESH_SECRET_KEY;
 console.log(process.env.JWT_SECRET_KEY); 
 console.log(process.env.JWT_REFRESH_SECRET_KEY);
+
 app.post("/signup", async (req, res) => {
   const { username, email, hashed_password } = req.body;
   if (!hashed_password) {
     return res.status(400).send("Password is required.");
   }
   try {
-    const hashedPassword = await bcrypt.hash(hashed_password, 10);
     const newUser = await pool.query(
       'INSERT INTO "users" (username, email, hashed_password) VALUES ($1, $2, $3) RETURNING *',
-      [username, email, hashedPassword]
+      [username, email, hashed_password]
     );
     res.json(newUser.rows[0]);
   } catch (err) {
