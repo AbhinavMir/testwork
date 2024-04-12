@@ -15,7 +15,7 @@ interface Provider {
   provider_id: number;
   name: string;
   specialty: string;
-  goldcarded_by: string;
+  gold_carded_by: string;
 }
 
 interface TextInputProps {
@@ -68,6 +68,7 @@ export default function ProviderDisplay() {
       try {
         const response = await fetch(`${apiUrl}/providers`);
         const data: Provider[] = await response.json();
+        console.log(data);
         setProviders(data);
       } catch (error) {
         console.error("Error fetching providers:", error);
@@ -90,7 +91,7 @@ export default function ProviderDisplay() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {providers.map(({ provider_id, name, specialty, goldcarded_by }) => (
+          {providers.map(({ provider_id, name, specialty, gold_carded_by }) => (
             <TableRow key={provider_id}>
               <TableCell className="font-medium">
                 P{provider_id.toString().padStart(3, "0")}
@@ -98,7 +99,7 @@ export default function ProviderDisplay() {
               <TableCell>{name}</TableCell>
               <TableCell>{specialty}</TableCell>
               <TableCell>
-                <Badge className="bg-yellow-800">{goldcarded_by}</Badge>
+                {gold_carded_by}
               </TableCell>
             </TableRow>
           ))}
