@@ -16,16 +16,16 @@ const pool = new Pool({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
     database: process.env.DB_DATABASE,
-    password: process.env.DB_PASSWORD,
+    hashed_password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
 });
 
 app.post('/signup', async (req, res) => {
-    const { username, email, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const { username, email, hashed_password } = req.body;
+    const hashedPassword = await bcrypt.hash(hashed_password, 10);
     try {
         const newUser = await pool.query(
-            'INSERT INTO "users" (username, email, password) VALUES ($1, $2, $3) RETURNING id, username, email',
+            'INSERT INTO "users" (username, email, hashed_password) VALUES ($1, $2, $3) RETURNING id, username, email',
             [username, email, hashedPassword]
         );
         res.json(newUser.rows[0]);
@@ -44,9 +44,10 @@ app.post('/get-all-users', async (req, res) => {
         res.status(500).send('Server Error');
     }
 }
+);
 
 app.post('/login', async (req, res) => {
-    const { username, password } = req.body;
+    const { username, hashed_password } = req.body;
     try {
         const user = await pool.query(
             'SELECT * FROM "users" WHERE username = $1',
@@ -54,7 +55,7 @@ app.post('/login', async (req, res) => {
         );
 
         if (user.rows.length > 0) {
-            const validPassword = await bcrypt.compare(password, user.rows[0].password);
+            const validPassword = await bcrypt.compare(hashed_password, user.rows[0].hashed_password);
             if (validPassword) {
                 const token = jwt.sign({ id: user.rows[0].id }, jwtSecretKey, { expiresIn: '1h' });
                 res.json({ token });
