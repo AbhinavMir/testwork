@@ -149,6 +149,66 @@ app.get("/payer-gold-carding-eligibility", async (req, res) => {
   }
 });
 
+app.delete("/payers/:id", authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query("DELETE FROM payers WHERE payer_id = $1", [
+      id,
+    ]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+});
+
+app.delete("/gold-carding-rules/:id", authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      "DELETE FROM gold_carding_rules WHERE rule_id = $1",
+      [id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+});
+
+app.delete(
+  "/payer-gold-carding-eligibility/:id",
+  authenticateToken,
+  async (req, res) => {
+    const { id } = req.params;
+    try {
+      const result = await pool.query(
+        "DELETE FROM payer_gold_carding_eligibility WHERE id = $1",
+        [id]
+      );
+      res.json(result.rows);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Server Error");
+    }
+  }
+);
+
+
+app.delete("/providers/:id", authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query("DELETE FROM providers WHERE provider_id = $1", [
+      id,
+    ]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+}
+);
+
 // Endpoint to get all providers
 app.get("/providers",  async (req, res) => {
   try {
